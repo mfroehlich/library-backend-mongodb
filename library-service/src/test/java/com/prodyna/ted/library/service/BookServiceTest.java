@@ -15,12 +15,14 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.prodyna.ted.library.entity.Book;
 import com.prodyna.ted.library.entity.Category;
 
+@Ignore
 @RunWith(Arquillian.class)
 public class BookServiceTest {
 	
