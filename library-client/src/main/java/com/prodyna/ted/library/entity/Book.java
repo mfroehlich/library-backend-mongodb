@@ -1,5 +1,10 @@
 package com.prodyna.ted.library.entity;
 
+import com.prodyna.ted.library.entity.Category;
+
+import java.io.Serializable;
+
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +50,10 @@ public class Book implements Serializable {
 	public List<String> getAuthors() {
 		return authors;
 	}
+
+    public void addAuthor(String aut) {
+        this.authors.add(aut);
+    }
 	
 	public String getIsbn() {
 		return isbn;
@@ -57,6 +66,10 @@ public class Book implements Serializable {
 	public List<Category> getCategories() {
 		return categories;
 	}
+
+    public void addCategory(Category c) {
+        this.categories.add(c);
+    }
 	
 	@Override
 	public int hashCode() {
