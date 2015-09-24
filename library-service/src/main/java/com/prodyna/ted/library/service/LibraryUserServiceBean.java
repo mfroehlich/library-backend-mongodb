@@ -29,34 +29,30 @@ import com.prodyna.ted.library.entity.LibraryUser;
 @Stateless
 public class LibraryUserServiceBean implements LibraryUserService {
 	
-	private static final String LENT_BOOKS = "lentBooks";
-    private static final String TELEPHONE_NUMBER = "telephoneNumber";
-    private static final String DATE_OF_BIRTH = "dateOfBirth";
-    private static final String LAST_NAME = "lastName";
-    private static final String FIRST_NAME = "firstName";
-    private static final String USERNAME = "username";
-    private static final String LIBRARY_USER_ID = "libraryUserID";
-    private static final String LIBRARY_USER = "LibraryUsers";
+
+    
+    @Inject
+    private EntityDocumentTransformer transformer;
     
 	@Inject
 	private MongoDatabase libraryDB;
 
 	@Override
 	public void addUser(LibraryUser user) {
-		Document userDoc = userToDocument(user);
-		libraryDB.getCollection(LIBRARY_USER).insertOne(userDoc);
+		Document userDoc = transformer.userToDocument(user);
+		libraryDB.getCollection(EntityDocumentTransformer.LIBRARY_USER).insertOne(userDoc);
 	}
 
 
 	@Override
 	public void removeUser(final UUID uuid) {
-		libraryDB.getCollection(LIBRARY_USER).findOneAndDelete(Filters.eq(LIBRARY_USER_ID, uuid)) ;
+		libraryDB.getCollection(EntityDocumentTransformer.LIBRARY_USER).findOneAndDelete(Filters.eq(EntityDocumentTransformer.LIBRARY_USER_ID, uuid)) ;
 	}
 
 	@Override
 	public LibraryUser findUserByUUID(UUID uuid) {
-	    Document userDoc = libraryDB.getCollection(LIBRARY_USER).find(Filters.eq(LIBRARY_USER_ID, uuid)).iterator().next() ;
-	    LibraryUser user = documentToUser(userDoc);
+	    Document userDoc = libraryDB.getCollection(EntityDocumentTransformer.LIBRARY_USER).find(Filters.eq(EntityDocumentTransformer.LIBRARY_USER_ID, uuid)).iterator().next() ;
+	    LibraryUser user = transformer.documentToUser(userDoc);
 	    return user;
 	}
 
@@ -64,30 +60,30 @@ public class LibraryUserServiceBean implements LibraryUserService {
 
     @Override
 	public List<LibraryUser> findUsersByUsername(String username) {
-        FindIterable<Document> userDoc = libraryDB.getCollection(LIBRARY_USER).find(Filters.eq(USERNAME, username)) ;
-        List<LibraryUser> users = documentToUser(userDoc);
+        FindIterable<Document> userDoc = libraryDB.getCollection(EntityDocumentTransformer.LIBRARY_USER).find(Filters.eq(EntityDocumentTransformer.USERNAME, username)) ;
+        List<LibraryUser> users = transformer.documentToUser(userDoc);
         return users;
 	}
 
 
     @Override
 	public List<LibraryUser> findUsersByFirstName(String firstname) {
-        FindIterable<Document> userDoc = libraryDB.getCollection(LIBRARY_USER).find(Filters.eq(FIRST_NAME   , firstname)) ;
-        List<LibraryUser> users = documentToUser(userDoc);
+        FindIterable<Document> userDoc = libraryDB.getCollection(EntityDocumentTransformer.LIBRARY_USER).find(Filters.eq(EntityDocumentTransformer.FIRST_NAME   , firstname)) ;
+        List<LibraryUser> users = transformer.documentToUser(userDoc);
         return users;
 	}
 
 	@Override
 	public List<LibraryUser> findUsersByLastName(String lastname) {
-        FindIterable<Document> userDoc = libraryDB.getCollection(LIBRARY_USER).find(Filters.eq(LAST_NAME   , lastname)) ;
-        List<LibraryUser> users = documentToUser(userDoc);
+        FindIterable<Document> userDoc = libraryDB.getCollection(EntityDocumentTransformer.LIBRARY_USER).find(Filters.eq(EntityDocumentTransformer.LAST_NAME   , lastname)) ;
+        List<LibraryUser> users = transformer.documentToUser(userDoc);
         return users;
 	}
 
 	@Override
 	public List<LibraryUser> findUsersByDateOfBirth(Date dateOfBirth) {
-        FindIterable<Document> userDoc = libraryDB.getCollection(LIBRARY_USER).find(Filters.eq(DATE_OF_BIRTH   , dateOfBirth)) ;
-        List<LibraryUser> users = documentToUser(userDoc);
+        FindIterable<Document> userDoc = libraryDB.getCollection(EntityDocumentTransformer.LIBRARY_USER).find(Filters.eq(EntityDocumentTransformer.DATE_OF_BIRTH   , dateOfBirth)) ;
+        List<LibraryUser> users = transformer.documentToUser(userDoc);
         return users;
 	}
 
@@ -126,34 +122,5 @@ public class LibraryUserServiceBean implements LibraryUserService {
 		return null;
 	}
 
-    private Document userToDocument(LibraryUser user) {
-        Document userDoc =new Document();
-                
-        userDoc.put(LIBRARY_USER_ID, user.getLibraryUserID());
-        userDoc.put(USERNAME, user.getUsername());
-        userDoc.put(FIRST_NAME, user.getFirstName());
-        userDoc.put(LAST_NAME, user.getLastName());
-        userDoc.put(DATE_OF_BIRTH, user.getDateOfBirth());
-        userDoc.put(TELEPHONE_NUMBER, user.getTelephoneNumber());
-        userDoc.put(LENT_BOOKS, user.getLentBooks());
-        return userDoc;
-    }
-    private LibraryUser documentToUser(Document userDoc) {
-        UUID uuid = (UUID) userDoc.get(LIBRARY_USER_ID);
-        LibraryUser user = new LibraryUser(userDoc.getString(FIRST_NAME), userDoc.getString(LAST_NAME));
-        user.setUsername(userDoc.getString(USERNAME));
-        user.setLibraryUserID(uuid);
-        user.setDateOfBirth(userDoc.getDate(DATE_OF_BIRTH));
-        user.setTelephoneNumber(userDoc.getString(TELEPHONE_NUMBER));
-        user.getLentBooks().addAll((Collection<Book>) userDoc.get(LENT_BOOKS));
-        return user;
-    }
-    private List<LibraryUser> documentToUser(FindIterable<Document> userDoc) {
-        List<LibraryUser> users = new ArrayList<LibraryUser>();
-        for (Document document : userDoc) {
-            users.add(documentToUser(document));
-        }
-        return users;
-    }
     
 }

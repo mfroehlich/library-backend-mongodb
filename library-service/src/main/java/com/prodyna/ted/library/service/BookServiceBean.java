@@ -30,10 +30,12 @@ private static final String BOOKS = "books";
 
 	@Inject
 	private MongoDatabase libraryDB;
+	@Inject
+	private EntityDocumentTransformer transformer;
 	
 	@Override
 	public void addBook(Book book) {
-        Document bookDoc = getDocumentForBook(book);
+        Document bookDoc = transformer.getDocumentForBook(book);
         libraryDB.getCollection(BOOKS).insertOne(bookDoc);
 	}
 
@@ -49,7 +51,7 @@ private static final String BOOKS = "books";
         Book book = null;
         FindIterable<Document> books = libraryDB.getCollection(BOOKS).find(eq("isbn", isbn));
         for (Document bookDoc : books) {
-            book = getBookForDocument(bookDoc);
+            book = transformer.getBookForDocument(bookDoc);
         }
 
 		return book;
@@ -61,7 +63,7 @@ private static final String BOOKS = "books";
         List<Book> books = new ArrayList<>();
         FindIterable<Document> bookDocs = libraryDB.getCollection(BOOKS).find(eq("title", title));
         for (Document bookDoc : bookDocs) {
-            Book book = getBookForDocument(bookDoc);
+            Book book = transformer.getBookForDocument(bookDoc);
             books.add(book);
         }
 
@@ -74,7 +76,7 @@ private static final String BOOKS = "books";
         List<Book> books = new ArrayList<>();
         FindIterable<Document> booksDocs = libraryDB.getCollection(BOOKS).find(eq("authors", author));
         for (Document bookDoc : booksDocs) {
-            Book book = getBookForDocument(bookDoc);
+            Book book = transformer.getBookForDocument(bookDoc);
             books.add(book);
         }
 		
@@ -87,7 +89,7 @@ private static final String BOOKS = "books";
         List<Book> books = new ArrayList<>();
         FindIterable<Document> booksDocs = libraryDB.getCollection(BOOKS).find(eq("categories.name", category.getName()));
         for (Document bookDoc : booksDocs) {
-            Book book = getBookForDocument(bookDoc);
+            Book book =transformer. getBookForDocument(bookDoc);
             books.add(book);
         }
 
@@ -104,59 +106,13 @@ private static final String BOOKS = "books";
         List<Book> books = new ArrayList<>();
         FindIterable<Document> allBooks = libraryDB.getCollection(BOOKS).find();
         for (Document bookDoc : allBooks) {
-            Book book = getBookForDocument(bookDoc);
+            Book book = transformer.getBookForDocument(bookDoc);
             books.add(book);
         }
 
         return books;
 	}
 
-    private Document getDocumentForBook(Book book) {
-        Document doc = new Document();
-        doc.put("isbn", book.getIsbn());
-        doc.put("title", book.getTitle());
-        doc.put("subtitle", book.getSubtitle());
-        doc.put("authors", book.getAuthors());
 
-        List<Document> catDocs = new ArrayList<>();
-        for (Category cat: book.getCategories()) {
-            catDocs.add(getDocumentForCategory(cat));
-        }
-        doc.put("categories", catDocs);
 
-        return doc;
-    }
-
-    private Book getBookForDocument(Document bookDoc) {
-        String title = (String) bookDoc.get("title");
-        String isbn = (String) bookDoc.get("isbn");
-        String subtitle = (String) bookDoc.get("subtitle");
-        List<Document> catDocs = (List<Document>) bookDoc.get("categories");
-        List<String> authors = (List<String>) bookDoc.get("authors");
-
-        Book b = new Book(title, isbn);
-        b.setSubtitle(subtitle);
-
-        for (String author : authors) {
-            b.addAuthor(author);
-        }
-        for (Document catDoc : catDocs) {
-            Category c = getCategoryForDocument(catDoc);
-            b.addCategory(c);
-        }
-
-        return b;
-    }
-
-    private Document getDocumentForCategory(Category cat) {
-        Document doc = new Document();
-        doc.put("name", cat.getName());
-        return doc;
-    }
-
-    private Category getCategoryForDocument(Document catDoc) {
-        String name = (String) catDoc.get("name");
-        Category c = new Category(name);
-        return c;
-    }
 }
