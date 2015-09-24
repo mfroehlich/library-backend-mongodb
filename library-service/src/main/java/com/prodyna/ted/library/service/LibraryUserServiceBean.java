@@ -111,16 +111,16 @@ public class LibraryUserServiceBean implements LibraryUserService {
 	
 	@Override
 	public void removeAll() {
-        libraryDB.getCollection(LIBRARY_USER).drop();
+        libraryDB.getCollection(EntityDocumentTransformer.LIBRARY_USER).drop();
 	}
 
 	@Override
 	public List<LibraryUser> findAll() {
-        FindIterable<Document> userDocs = libraryDB.getCollection(LIBRARY_USER).find();
+        FindIterable<Document> userDocs = libraryDB.getCollection(EntityDocumentTransformer.LIBRARY_USER).find();
 
         List<LibraryUser> users = new ArrayList<>();
         for (Document userDoc : userDocs) {
-            LibraryUser user = documentToUser(userDoc);
+            LibraryUser user = transformer.documentToUser(userDoc);
             users.add(user);
         }
         return users;
