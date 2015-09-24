@@ -29,9 +29,7 @@ import com.prodyna.ted.library.entity.LibraryUser;
  */
 @Stateless
 public class LibraryUserServiceBean implements LibraryUserService {
-	
 
-    
     @Inject
     private EntityDocumentTransformer transformer;
     
@@ -99,8 +97,13 @@ public class LibraryUserServiceBean implements LibraryUserService {
 
 	@Override
 	public void lendBook(Book book, LibraryUser user) {
-		// TODO your code comes here
-		
+        if (user.getLentBooks().contains(book) == false) {
+            Document bookDoc = transformer.getDocumentForBook(book);
+
+            libraryDB.getCollection(EntityDocumentTransformer.LIBRARY_USER).updateOne(
+                    Filters.eq(EntityDocumentTransformer.LIBRARY_USER_ID, user.getLibraryUserID()),
+                    new Document("$addToSet", new Document( EntityDocumentTransformer.LENT_BOOKS, bookDoc)));
+        }
 	}
 
 	@Override
