@@ -30,6 +30,7 @@ private static final String BOOKS = "books";
 
 	@Inject
 	private MongoDatabase libraryDB;
+
 	@Inject
 	private EntityDocumentTransformer transformer;
 	
@@ -112,7 +113,4 @@ private static final String BOOKS = "books";
 
         return books;
 	}
-
-
-
 }
