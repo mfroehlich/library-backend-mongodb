@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 import com.prodyna.ted.library.entity.Book;
 import com.prodyna.ted.library.entity.Category;
 
-@Ignore
 @RunWith(Arquillian.class)
 public class BookServiceTest {
 	

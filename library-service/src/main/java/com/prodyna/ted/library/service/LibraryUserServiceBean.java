@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.xml.registry.infomodel.User;
 
 import org.bson.BsonDocument;
 import org.bson.Document;
@@ -47,7 +48,6 @@ public class LibraryUserServiceBean implements LibraryUserService {
 		libraryDB.getCollection(LIBRARY_USER).insertOne(userDoc);
 	}
 
-
 	@Override
 	public void removeUser(final UUID uuid) {
 		libraryDB.getCollection(LIBRARY_USER).findOneAndDelete(Filters.eq(LIBRARY_USER_ID, uuid)) ;
@@ -59,8 +59,6 @@ public class LibraryUserServiceBean implements LibraryUserService {
 	    LibraryUser user = documentToUser(userDoc);
 	    return user;
 	}
-
-
 
     @Override
 	public List<LibraryUser> findUsersByUsername(String username) {
@@ -117,13 +115,19 @@ public class LibraryUserServiceBean implements LibraryUserService {
 	
 	@Override
 	public void removeAll() {
-		// TODO your code comes here
+        libraryDB.getCollection(LIBRARY_USER).drop();
 	}
 
 	@Override
 	public List<LibraryUser> findAll() {
-		// TODO your code comes here
-		return null;
+        FindIterable<Document> userDocs = libraryDB.getCollection(LIBRARY_USER).find();
+
+        List<LibraryUser> users = new ArrayList<>();
+        for (Document userDoc : userDocs) {
+            LibraryUser user = documentToUser(userDoc);
+            users.add(user);
+        }
+        return users;
 	}
 
     private Document userToDocument(LibraryUser user) {
