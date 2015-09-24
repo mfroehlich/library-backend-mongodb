@@ -86,7 +86,7 @@ public class EntityDocumentTransformer {
         List<Book> lentBooks = user.getLentBooks();
         List<Document> booksDoc = new ArrayList<Document>();
         for (Book book : lentBooks) {
-//            booksDoc.add(bookToDocument());
+            booksDoc.add(getDocumentForBook(book));
         }
         userDoc.put(LENT_BOOKS, lentBooks);
         
@@ -100,7 +100,10 @@ public class EntityDocumentTransformer {
         user.setLibraryUserID(uuid);
         user.setDateOfBirth(userDoc.getDate(DATE_OF_BIRTH));
         user.setTelephoneNumber(userDoc.getString(TELEPHONE_NUMBER));
-        user.getLentBooks().addAll((Collection<Book>) userDoc.get(LENT_BOOKS));
+        Collection<Document> object = (Collection<Document>) userDoc.get(LENT_BOOKS);
+        for (Document document : object) {
+            user.getLentBooks().add(getBookForDocument(document)); 
+        }
         return user;
     }
     public List<LibraryUser> documentToUser(FindIterable<Document> userDoc) {

@@ -87,8 +87,10 @@ public class LibraryUserServiceBean implements LibraryUserService {
 
 	@Override
 	public LibraryUser findUserByBookLent(Book book) {
-		// TODO your code comes here
-		return null;
+        Document document = libraryDB.getCollection(EntityDocumentTransformer.LIBRARY_USER)
+                .find(Filters.eq(EntityDocumentTransformer.LENT_BOOKS + ".isbn"  , book.getIsbn())).iterator().next() ;
+        
+        return transformer.documentToUser(document);
 	}
 
 	@Override
